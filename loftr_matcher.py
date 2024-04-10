@@ -19,12 +19,13 @@ def concatenate_filenames(paths):
     return concatenated_filenames
 
 # Check if the correct number of arguments are provided
-if len(sys.argv) != 4:
-    print("Usage: python loftr_matcher.py img0 img1 path_to_output")
+if len(sys.argv) != 5:
+    print("Usage: python loftr_matcher.py weights_file img0 img1 path_to_output")
     sys.exit(1)
 
 matcher = LoFTR(config=default_cfg)
-matcher.load_state_dict(torch.load("/mnt/ssd/data/LoFTR/weights/outdoor_ds.ckpt")['state_dict'])
+#matcher.load_state_dict(torch.load("/mnt/ssd/data/LoFTR/weights/outdoor_ds.ckpt")['state_dict'])
+matcher.load_state_dict(torch.load(sys.argv[1])['state_dict'])
 matcher = matcher.eval().cuda()
 
 default_cfg['coarse']
@@ -42,8 +43,8 @@ default_cfg['coarse']
  'attention': 'linear',
  'temp_bug_fix': False}
 
-img0_pth = sys.argv[1]
-img1_pth = sys.argv[2]
+img0_pth = sys.argv[2]
+img1_pth = sys.argv[3]
 img0_raw = cv2.imread(img0_pth, cv2.IMREAD_GRAYSCALE)
 img1_raw = cv2.imread(img1_pth, cv2.IMREAD_GRAYSCALE)
 
@@ -75,7 +76,7 @@ with torch.no_grad():
 	mkpts1 = batch['mkpts1_f'].cpu().numpy()
 	mconf = batch['mconf'].cpu().numpy()
 
-outfile = sys.argv[3] + concatenate_filenames([img0_pth, img1_pth]) + ".txt"
+outfile = sys.argv[4] + concatenate_filenames([img0_pth, img1_pth]) + ".txt"
 
 with open(outfile, 'w') as f:
         f.write(str(mkpts0.shape[0]) + "\n")
