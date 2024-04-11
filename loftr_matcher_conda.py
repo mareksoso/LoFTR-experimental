@@ -6,10 +6,9 @@ import sys
 import torch
 import cv2
 import numpy as np
-#import matplotlib.cm as cm
-#from src.utils.plotting import make_matching_figure
-#from src.loftr import LoFTR, default_cfg
-from kornia.feature import LoFTR, default_cfg
+import matplotlib.cm as cm
+from src.utils.plotting import make_matching_figure
+from src.loftr import LoFTR, default_cfg
 #import matplotlib
 #import matplotlib.pyplot as plt
 #matplotlib.use('TkAgg')
