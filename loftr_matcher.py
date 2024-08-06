@@ -26,7 +26,7 @@ if len(sys.argv) != 5:
 
 matcher = LoFTR(config=default_cfg)
 #matcher.load_state_dict(torch.load("/mnt/ssd/data/LoFTR/weights/outdoor_ds.ckpt")['state_dict'])
-matcher.load_state_dict(torch.load(sys.argv[1])['state_dict'])
+matcher.load_state_dict(torch.load(sys.argv[1], {'weights_only'   : True})['state_dict'])
 matcher = matcher.eval().cuda()
 
 default_cfg['coarse']
