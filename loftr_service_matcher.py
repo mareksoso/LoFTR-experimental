@@ -60,11 +60,11 @@ def image_processing_server():
     server_socket.bind(('localhost', port))
     server_socket.listen(5)
     print("Server is listening on port", port)
+    conn, addr = server_socket.accept()
 
     while True:
-        conn, addr = server_socket.accept()
         file_paths = receive_full_message(conn)
-        print("Received message:", file_paths)
+        #print("Received message:", file_paths)
 
         if file_paths.strip() == "shutdown":
             print("Shutdown command received. Server is shutting down.")
@@ -76,7 +76,7 @@ def image_processing_server():
         process_images(file_paths_list)
 
         conn.sendall(b"done")
-        conn.close()
+        #conn.close()
 
     server_socket.close()
     print("Server has shut down.")
