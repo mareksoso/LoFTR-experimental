@@ -114,9 +114,12 @@ def process_images(file_paths_list):
             mkpts1 = batch['mkpts1_f'].cpu().numpy()
             mconf = batch['mconf'].cpu().numpy()
 
-        outfile = output_path + concatenate_filenames([img_ref, img1_pth]) + "_" + str(cnt) + ".txt"
+        #outfile = output_path + concatenate_filenames([img_ref, img1_pth]) + "_" + str(cnt) + ".txt"
 
-        with open(outfile, 'w') as f:
+        tmpfile = output_path + concatenate_filenames([img_ref, img1_pth]) + "_" + str(cnt) + ".tmp"
+        finalfile = output_path + concatenate_filenames([img_ref, img1_pth]) + "_" + str(cnt) + ".txt"
+
+        with open(tmpfile, 'w') as f:
             f.write(str(mkpts0.shape[0]) + "\n")
             scaled_data0 = np.copy(mkpts0)
             scaled_data0[:, 0] /= img_ref_raw.shape[1]
@@ -128,6 +131,7 @@ def process_images(file_paths_list):
             scaled_data1[:, 1] /= img1_raw.shape[0]
             np.savetxt(f, scaled_data1, fmt='%.6f', delimiter=' ')
 
+        os.rename(tmpfile, finalfile)
         cnt += 1
 
 # Run the server
