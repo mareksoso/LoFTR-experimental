@@ -14,6 +14,7 @@ from src.loftr import LoFTR, default_cfg
 #import matplotlib.pyplot as plt
 #matplotlib.use('TkAgg')
 import socket
+import time
 
 #/mnt/ssd/data/GEO/slam-test/GS010035/images/000000.jpg /mnt/ssd/data/GEO/slam-test/tmp_data/Miroslav/images/001320.jpg /mnt/ssd/data/GEO/slam-test/tmp_data/Miroslav/images/001321.jpg /mnt/ssd/data/GEO/slam-test/tmp_data/Miroslav/images/001319.jpg
 
@@ -86,13 +87,25 @@ def concatenate_filenames(paths):
     concatenated_filenames = '_'.join(filenames)
     return concatenated_filenames
 
+def safe_imread(path, retries=5, delay=0.2):
+    """
+    Attempts to read an image file with retries in case of rare access conflicts.
+    """
+    for attempt in range(retries):
+        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        if img is not None:
+            return img
+        time.sleep(delay)  # Wait a bit before retrying
+    raise FileNotFoundError(f"Failed to read {path} after {retries} retries.")
+
 def process_images(file_paths_list):
     img_ref = file_paths_list[0]
     img_list = file_paths_list[1:-1]
     print(img_ref)
     print(img_list)
 
-    img_ref_raw = cv2.imread(img_ref, cv2.IMREAD_GRAYSCALE)
+    #img_ref_raw = cv2.imread(img_ref, cv2.IMREAD_GRAYSCALE)
+    img_ref_raw = safe_imread(img_ref)
     factor_raw = 64 if img_ref_raw.shape[0] > 3000 else 32
     img_ref_raw = cv2.resize(img_ref_raw, (img_ref_raw.shape[1]//factor_raw*8, img_ref_raw.shape[0]//factor_raw*8))
     img_ref_torch = torch.from_numpy(img_ref_raw)[None][None].cuda() / 255.
